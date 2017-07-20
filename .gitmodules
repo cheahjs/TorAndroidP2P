@@ -1,0 +1,3 @@
+[submodule "external/briar"]
+	path = external/briar
+	url = https://code.briarproject.org/akwizgran/briar.git

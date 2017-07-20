@@ -1,1 +1,4 @@
-include ':app'
+include ':app', ':bramble-core', ':bramble-api', ':bramble-android'
+project(':bramble-core').projectDir = new File('external/briar/bramble-core')
+project(':bramble-api').projectDir = new File('external/briar/bramble-api')
+project(':bramble-android').projectDir = new File('external/briar/bramble-android')
