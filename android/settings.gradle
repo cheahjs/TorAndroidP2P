@@ -1,0 +1,3 @@
+rootProject.name = 'TorAndroidP2P'
+
+include ':app'
