@@ -1,11 +1,5 @@
-/**
- * Main View
- */
+import React, { Component } from 'react';
+import { AppRegistry, StyleSheet, Text, View } from 'react-native';
+import TodoApp from './src/app';
 
-import React from 'react';
-import {
-  AppRegistry
-} from 'react-native';
-import App from './src/App'
-
-AppRegistry.registerComponent('TorAndroidP2P', () => App);
+AppRegistry.registerComponent('TorAndroidP2P', () => TodoApp);
