@@ -156,7 +156,7 @@ export default class MainListScreen extends Component {
                 rightButtons: [
                     {
                         title: 'Done', // for a textual button, provide the button title (label)
-                        id: 'Done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                        id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
                         icon: iconsMap['check']
                     },
                 ],

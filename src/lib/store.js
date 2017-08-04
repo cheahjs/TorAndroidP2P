@@ -78,7 +78,11 @@ class Store {
     }
 
     addListItem(key, title) {
-        this.cache.main_list[key] = new List(key, title);
+        if (key in this.cache.main_list) {
+            this.cache.main_list[key].title = title;
+        } else {
+            this.cache.main_list[key] = new List(key, title);
+        }
         this.flushCache();
     }
 
