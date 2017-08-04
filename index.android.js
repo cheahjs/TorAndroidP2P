@@ -6,16 +6,30 @@
 
 import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './src/screens';
+import { iconsMap, iconsLoaded } from './src/lib/icons';
 
-registerScreens(); // this is where you register all of your app's screens
-
-Navigation.startSingleScreenApp({
-  screen: {
-    screen: 'torlist.MainListScreen', // unique ID registered with Navigation.registerScreen
-    title: 'TorTodo', // title of the screen as appears in the nav bar (optional)
-    navigatorStyle: {}, // override the navigator style for the screen, see "Styling the navigator" below (optional)
-    navigatorButtons: {} // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
-  },
-  passProps: {}, // simple serializable object that will pass as props to all top screens (optional)
-  animationType: ' none' // optional, add transition animation to root change: 'none', 'slide-down', 'fade'
+iconsLoaded.then(() => {
+  startApp();
 });
+
+function startApp() {
+  registerScreens(); // this is where you register all of your app's screens
+
+  Navigation.startSingleScreenApp({
+    screen: {
+      screen: 'torlist.MainListScreen', // unique ID registered with Navigation.registerScreen
+      title: 'TorTodo', // title of the screen as appears in the nav bar (optional)
+      navigatorButtons: {
+        rightButtons: [
+          {
+            title: 'Settings', // for a textual button, provide the button title (label)
+            id: 'Settings', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+            icon: iconsMap['settings'],
+            buttonColor: 'black'
+          },
+        ],
+      } // override the nav buttons for the screen, see "Adding buttons to the navigator" below (optional)
+    },
+    animationType: ' none'
+  });
+}
