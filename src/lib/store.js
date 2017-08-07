@@ -79,11 +79,21 @@ class Store {
 
     addListItem(key, title) {
         if (key in this.cache.main_list) {
+            this.cache.main_list[key] = Object.assign({}, this.cache.main_list[key]);
             this.cache.main_list[key].title = title;
+            console.log('updating ' + key);
         } else {
             this.cache.main_list[key] = new List(key, title);
+            console.log('creating new list: ' + key);
         }
         this.flushCache();
+    }
+
+    deleteListItem(key) {
+        if (key in this.cache.main_list) {
+            delete this.cache.main_list[key];
+            this.flushCache();
+        }
     }
 
     getListItem(key) {
@@ -144,6 +154,25 @@ class Store {
         this.flushCache();
     }
 
+    hasListChanged(a, b) {
+        if (a !== b)
+            return true;
+        if (a.title != b.title)
+            return true;
+        if (a.todos != b.todos)
+            return true;
+        if (a.todos.length != b.todos.length)
+            return true;
+        for (var todo of a.todos) {
+            let bFind = b.todos.find(x => x.id == todo.id);
+            if (bFind === undefined)
+                return true;
+            if (bFind != todo)
+                return true;
+        }
+        return false;
+    }
+
     _triggerReceivers() {
         this.receivers.forEach(function (receiver) {
             receiver();
@@ -188,10 +217,16 @@ class List {
         this.key = key;
         this.title = title;
         this.todos = [];
+        this.created_at = Date.now();
+        this.last_modified = Date.now();
     }
 
     get length() {
         return this.todos.length;
+    }
+
+    get incompleteLength() {
+        return this.todos.filter(x => !x.completed_at).length;
     }
 }
 

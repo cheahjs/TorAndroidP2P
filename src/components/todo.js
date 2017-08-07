@@ -53,13 +53,13 @@ export default class Todo extends Component {
                         activeOpacity={1}
                         onPress={this.onStarred.bind(this)}
                     >
-                        {starred && <View style={styles.starBg}>
+                        {/* {starred && <View style={styles.starBg}>
                             <View style={styles.bottomTriangle} />
-                        </View>}
+                        </View>} */}
                         <Icon
                             name={'star' + (starred ? '' : '-outline')}
-                            size={starred ? 20 : 24}
-                            color={starred ? 'white' : 'gray'}
+                            size={24}
+                            color={starred ? '#d74e48' : 'gray'}
                         />
                     </TouchableOpacity>
                 </View>
@@ -112,18 +112,5 @@ const styles = StyleSheet.create({
         width: 25,
         height: 44,
         backgroundColor: '#d74e48'
-    },
-    bottomTriangle: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 0,
-        borderBottomWidth: 3,
-        borderRightWidth: 12,
-        borderLeftWidth: 12,
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-        borderBottomColor: 'white'
     }
 });

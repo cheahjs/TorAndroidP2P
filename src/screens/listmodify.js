@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-    View, StyleSheet, Dimensions, TextInput, ScrollView, Text, Alert
+    View, StyleSheet, Dimensions, TextInput, ScrollView, Text, Alert,
+    TouchableHighlight
 } from 'react-native';
 import Store from '../lib/store'
 // var uuid = require('react-native-uuid');
@@ -50,6 +51,14 @@ export default class ListModifyScreen extends Component {
         }
     }
 
+    onDelete() {
+        Store.deleteListItem(this.props.keyid);
+        this.props.navigator.pop({
+            animated: true, // does the pop have transition animation or does it happen immediately (optional)
+            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
+        });
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -63,13 +72,31 @@ export default class ListModifyScreen extends Component {
                         value={this.state.title}
                         onChangeText={title => this.setState({ title })}
                         selectionColor={'#80d6ff'}
-                        autoFocus={true}
                     />
                 </View>
                 <ScrollView style={styles.container}>
                     <Text>TODO: Sharing, deletion, modification</Text>
+                    {this.renderButton()}
                 </ScrollView>
             </View>
+        );
+    }
+
+    renderButton() {
+        if (this.props.keyid === undefined)
+            return;
+
+        return (
+            <TouchableHighlight
+                activeOpacity={1}
+                underlayColor={'rgba(0,0,0,0.4)'}
+                style={styles.btn}
+                onPress={() => this.onDelete()}
+            >
+                <Text style={styles.btnText}>
+                    Delete List
+                </Text>
+            </TouchableHighlight>
         );
     }
 }
@@ -93,5 +120,20 @@ const styles = StyleSheet.create({
     headerInput: {
         color: 'white',
         fontSize: 32
-    }
+    },
+    btn: {
+        alignSelf: 'center',
+        marginVertical: 20,
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        width: width - 20,
+        backgroundColor: 'red',
+        borderRadius: 2,
+    },
+    btnText: {
+        color: 'white',
+        fontSize: 20,
+        // fontWeight: '600',
+        textAlign: 'center',
+    },
 });

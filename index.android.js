@@ -7,13 +7,18 @@
 import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './src/screens';
 import { iconsMap, iconsLoaded } from './src/lib/icons';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import todoApp from './src/reducers';
+
+const store = createStore(todoApp);
 
 iconsLoaded.then(() => {
   startApp();
 });
 
 function startApp() {
-  registerScreens(); // this is where you register all of your app's screens
+  registerScreens(store, Provider); // this is where you register all of your app's screens
 
   Navigation.startSingleScreenApp({
     screen: {

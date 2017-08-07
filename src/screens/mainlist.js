@@ -74,7 +74,7 @@ export default class MainListScreen extends Component {
     constructor(props) {
         super(props);
         this._contextualMenu = false;
-        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+        const ds = new ListView.DataSource({ rowHasChanged: Store.hasListChanged });
         this.state = {
             dataSource: ds.cloneWithRows([]),
             data: {},
@@ -107,6 +107,7 @@ export default class MainListScreen extends Component {
                 dataSource={this.state.dataSource}
                 renderRow={this.renderRow.bind(this)}
                 renderFooter={this.renderFooter.bind(this)}
+                renderHeader={this.renderHeader.bind(this)}
                 style={styles.list} />
         )
     }
@@ -117,10 +118,12 @@ export default class MainListScreen extends Component {
         if (initial) {
             this.state.dataSource = this.state.dataSource.cloneWithRows(newData);
             this.state.initial = true;
+            this.state.data = newData;
         } else {
             this.setState({
                 dataSource: this.state.dataSource.cloneWithRows(newData),
-                initial: false
+                initial: false,
+                data: newData,
             });
         }
     }
@@ -142,6 +145,21 @@ export default class MainListScreen extends Component {
                 onPress={this.onPressFooter}>
                 <View><FooterRow /></View>
             </TouchableNativeFeedback>
+        );
+    }
+
+    renderHeader = () => {
+        return (
+            <View>
+                <TouchableNativeFeedback
+                    onPress={this.onPressFooter}>
+                    <View><InboxRow count={this.state.data.filter(x => !x.completed_at).length} /></View>
+                </TouchableNativeFeedback>
+                <TouchableNativeFeedback
+                    onPress={this.onPressFooter}>
+                    <View><StarredRow count={this.state.data.filter(x => x.starred)} /></View>
+                </TouchableNativeFeedback>
+            </View>
         );
     }
 
@@ -176,6 +194,21 @@ export default class MainListScreen extends Component {
 
     onLongPress = (key) => {
         Vibration.vibrate([0, 10]);
+        this.props.navigator.push({
+            screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
+            animated: true, // does the push have transition animation or does it happen immediately (optional)
+            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            navigatorButtons: {
+                rightButtons: [
+                    {
+                        title: 'Done', // for a textual button, provide the button title (label)
+                        id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                        icon: iconsMap['check']
+                    },
+                ],
+            },
+            passProps: { keyid: key }
+        });
     }
 }
 
@@ -202,14 +235,27 @@ class Row extends Component {
 
         return (
             <Animated.View style={[
-                styles.row,
-                active ? styles.rowActive : null,
+                styles.rowContainer,
                 { opacity: this.state.opacity }
             ]}>
-                <Icon name="format-list-bulleted" size={20} />
-                <Text style={styles.text}>{data.title}</Text>
+                <View style={[
+                    styles.row,
+                    active ? styles.rowActive : null,
+                ]}>
+                    <Icon name="format-list-bulleted" size={20} />
+                    <Text style={styles.text} numberOfLines={1}>{data.title}</Text>
+                </View>
+                {this.renderBadge()}
             </Animated.View>
         );
+    }
+
+    renderBadge() {
+        if (this.props.data.todos.length == 0) {
+            return;
+        }
+
+        return (<Text style={styles.countBadge}>{this.props.data.incompleteLength}</Text>);
     }
 }
 
@@ -217,7 +263,7 @@ class FooterRow extends Component {
     render() {
         return (
             <Animated.View style={[
-                styles.row
+                styles.footerRow
             ]}>
                 <Icon name="plus" size={20} color="#64b5f6" />
                 <Text style={styles.footer}>Create list</Text>
@@ -226,19 +272,79 @@ class FooterRow extends Component {
     }
 }
 
+class InboxRow extends Component {
+    render() {
+        return (
+            <View style={styles.rowContainer}>
+                <View style={styles.row}>
+                    <Icon name="inbox" size={20} color="#64b5f6" />
+                    <Text style={styles.text}>Inbox</Text>
+                </View>
+                {this.renderBadge()}
+            </View>
+        );
+    }
+
+    renderBadge() {
+        if (this.props.count == 0)
+            return;
+
+        return (<Text style={styles.countBadge}>{this.props.count}</Text>);
+    }
+}
+
+class StarredRow extends Component {
+    render() {
+        return (
+            <View style={styles.rowContainer}>
+                <View style={styles.row}>
+                    <Icon name="star-outline" size={20} color="#d74e48" />
+                    <Text style={styles.text}>Starred</Text>
+                </View>
+                {this.renderBadge()}
+            </View>
+        );
+    }
+
+    renderBadge() {
+        if (this.props.count == 0)
+            return;
+
+        return (<Text style={styles.countBadge}>{this.props.count}</Text>);
+    }
+}
+
 const styles = StyleSheet.create({
     list: {
         flex: 1
+    },
+
+    footerRow: {
+        width: window.width,
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 16,
     },
 
     row: {
         width: window.width,
         flexDirection: 'row',
         alignItems: 'center',
+        flex: 1,
+        paddingRight: 16
+    },
+
+    rowContainer: {
+        width: window.width,
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
         paddingHorizontal: 16,
         paddingTop: 16,
         paddingBottom: 16,
-        flex: 1
     },
 
     rowActive: {
@@ -256,5 +362,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         paddingLeft: 16,
         color: '#64b5f6'
+    },
+
+    countBadge: {
+        alignSelf: 'center',
+        // padding: 8
+        paddingLeft: 16,
     }
 });
