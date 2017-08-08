@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Store from '../lib/store'
+import { uuidv4 } from '../utils';
 
 export default class TodoForm extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export default class TodoForm extends Component {
 
   onSubmit() {
     if (!this.state.todo) return;
-    Store.addListTodo(this.props.keyid, this.state.todo, this.state.starred);
+    this.props.addTodo(uuidv4(), this.props.id, this.state.todo, this.state.starred);
     this.setState({ todo: '', starred: false });
   }
 
@@ -37,9 +38,10 @@ export default class TodoForm extends Component {
         <View style={styles.wrap}>
           <TextInput
             style={styles.title}
-            placeholder={'Add a to-do...'}
+            placeholder={this.props.id == 'starred' ? 'Add a to-do to "Inbox"' : 'Add a to-do...'}
             placeholderTextColor={'white'}
             value={todo}
+            autoCapitalize={'words'}
             onChangeText={todo => this.setState({ todo })}
             returnKeyType={'done'}
             onSubmitEditing={this.onSubmit.bind(this)}

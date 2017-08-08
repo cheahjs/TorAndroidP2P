@@ -1,7 +1,7 @@
-export const addTodo = (id, list_id, title, starred) => ({
+export const addTodo = (id, listId, title, starred) => ({
     type: 'ADD_TODO',
     id,
-    list_id,
+    listId,
     title,
     starred,
     created_at: Date.now()
@@ -44,8 +44,9 @@ export const deleteList = (id) => ({
     id
 })
 
-export const modifyList = (id) => ({
+export const modifyList = (id, title) => ({
     type: 'MODIFY_LIST',
     id, 
+    title,
     time: Date.now()
 })

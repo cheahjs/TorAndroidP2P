@@ -8,42 +8,22 @@ import Store from '../lib/store'
 export default class Todo extends Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            todo: Store.getListTodo(this.props.list_key, this.props.todo_key)
-        };
-        console.log(this.state);
-    }
-
-    onStarred() {
-        Store.toggleStarred(this.props.list_key, this.props.todo_key);
-        this.setState({
-            todo: Store.getListTodo(this.props.list_key, this.props.todo_key)
-        });
-    }
-
-    onComplete() {
-        Store.toggleComplete(this.props.list_key, this.props.todo_key);
-        this.setState({
-            todo: Store.getListTodo(this.props.list_key, this.props.todo_key)
-        });
     }
 
     render() {
-        console.log(this.state);
-        const { title, starred, complete } = this.state.todo;
+        const { id, title, starred, completed_at } = this.props.todo;
 
         return (
             <TouchableNativeFeedback>
-                <View style={[styles.container, { opacity: complete ? 0.75 : 1 }]}>
-                    <TouchableNativeFeedback onPress={this.onComplete.bind(this)}>
+                <View style={[styles.container, { opacity: !!completed_at ? 0.75 : 1 }]}>
+                    <TouchableNativeFeedback onPress={this.props.toggleCompleteTodo}>
                         <View style={[styles.placeholder, { paddingTop: 2 }]}>
-                            <Icon name={"checkbox-" + (complete ? "marked-outline" : "blank-outline")} size={24} color="gray" />
+                            <Icon name={"checkbox-" + (!!completed_at ? "marked-outline" : "blank-outline")} size={24} color="gray" />
                         </View>
                     </TouchableNativeFeedback>
 
                     <View style={styles.wrap}>
-                        <Text numberOfLines={1} style={[styles.title, complete && styles.checked]}>
+                        <Text numberOfLines={1} style={[styles.title, !!completed_at && styles.checked]}>
                             {title}
                         </Text>
                     </View>
@@ -51,7 +31,7 @@ export default class Todo extends Component {
                     <TouchableOpacity
                         style={styles.btn}
                         activeOpacity={1}
-                        onPress={this.onStarred.bind(this)}
+                        onPress={this.props.toggleStarredTodo}
                     >
                         {/* {starred && <View style={styles.starBg}>
                             <View style={styles.bottomTriangle} />

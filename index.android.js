@@ -1,34 +1,38 @@
-// import React, { Component } from 'react';
-// import { AppRegistry, StyleSheet, Text, View } from 'react-native';
-// import TodoApp from './src/app';
-
-// AppRegistry.registerComponent('TorAndroidP2P', () => TodoApp);
-
 import { Navigation } from 'react-native-navigation';
 import { registerScreens } from './src/screens';
 import { iconsMap, iconsLoaded } from './src/lib/icons';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import todoApp from './src/reducers';
+import { getStoredState, autoRehydrate, createPersistor } from 'redux-persist';
+import FilesystemStorage from 'redux-persist-filesystem-storage';
 
-const store = createStore(todoApp);
 
-iconsLoaded.then(() => {
-  startApp();
-});
+const persistConfig = { storage: FilesystemStorage }
+
+console.log('getting stored state');
+getStoredState(persistConfig, (err, restoredState) => {
+  console.log('state restored',restoredState);
+  const store = createStore(todoApp, restoredState);
+  const persistor = createPersistor(store, persistConfig);
+  console.log('loading icons');
+  iconsLoaded.then(() => {
+    console.log('icons loaded, starting app');
+    registerScreens(store, Provider);
+    startApp();
+  });
+})
 
 function startApp() {
-  registerScreens(store, Provider); // this is where you register all of your app's screens
-
   Navigation.startSingleScreenApp({
     screen: {
-      screen: 'torlist.MainListScreen', // unique ID registered with Navigation.registerScreen
-      title: 'TorTodo', // title of the screen as appears in the nav bar (optional)
+      screen: 'torlist.MainListScreen', 
+      title: 'TorTodo',
       navigatorButtons: {
         rightButtons: [
           {
-            title: 'Settings', // for a textual button, provide the button title (label)
-            id: 'Settings', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+            title: 'Settings',
+            id: 'Settings',
             icon: iconsMap['settings'],
             buttonColor: 'black'
           },

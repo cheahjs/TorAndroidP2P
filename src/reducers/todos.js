@@ -5,7 +5,7 @@ const todos = (state = [], action) => {
                 ...state,
                 {
                     id: action.id,
-                    list_id: action.list_id,
+                    listId: action.listId,
                     title: action.title,
                     starred: action.starred,
                     created_at: action.created_at,
@@ -41,6 +41,8 @@ const todos = (state = [], action) => {
             });
         case 'DELETE_TODO':
             return state.filter(todo => todo.id != action.id);
+        case 'DELETE_LIST':
+            return state.filter(todo => todo.listId != action.id);
         default:
             return state;
     }

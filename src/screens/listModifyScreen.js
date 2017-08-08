@@ -4,18 +4,13 @@ import {
     TouchableHighlight
 } from 'react-native';
 import Store from '../lib/store'
-// var uuid = require('react-native-uuid');
+import { connect } from 'react-redux';
+import * as actions from '../actions';
+import { uuidv4 } from '../utils';
 
 const { height, width } = Dimensions.get('window');
 
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-export default class ListModifyScreen extends Component {
+class ListModifyScreen extends Component {
     static navigatorStyle = {
         drawUnderTabBar: true,
         navBarButtonColor: 'white',
@@ -30,8 +25,8 @@ export default class ListModifyScreen extends Component {
         this.state = {
             title: ''
         }
-        if (this.props.keyid !== undefined) {
-            this.state.title = Store.getListItem(this.props.keyid).title;
+        if (this.props.list !== undefined) {
+            this.state.title = this.props.list.title;
         }
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
@@ -41,8 +36,11 @@ export default class ListModifyScreen extends Component {
             if (event.id == 'done') { // this is the same id field from the static navigatorButtons definition
                 if (!this.state.title)
                     return;
-                let listkey = this.props.keyid ? this.props.keyid : uuidv4();
-                Store.addListItem(listkey, this.state.title);
+                if (this.props.list) {
+                    this.props.dispatch(actions.modifyList(this.props.list.id, this.state.title));
+                } else {
+                    this.props.dispatch(actions.addList(uuidv4(), this.state.title))
+                }
                 this.props.navigator.pop({
                     animated: true, // does the pop have transition animation or does it happen immediately (optional)
                     animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
@@ -52,11 +50,20 @@ export default class ListModifyScreen extends Component {
     }
 
     onDelete() {
-        Store.deleteListItem(this.props.keyid);
-        this.props.navigator.pop({
-            animated: true, // does the pop have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
-        });
+        Alert.alert("Delete List", `"${this.props.list.title}" will be deleted forever.`,
+            [
+                { text: "NO" },
+                {
+                    text: "DELETE", onPress: () => {
+                        this.props.dispatch(actions.deleteList(this.props.list.id));
+                        this.props.navigator.pop({
+                            animated: true, // does the pop have transition animation or does it happen immediately (optional)
+                            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
+                        });
+                    }
+                }
+            ]);
+
     }
 
     render() {
@@ -70,12 +77,13 @@ export default class ListModifyScreen extends Component {
                         underlineColorAndroid={'transparent'}
                         style={styles.headerInput}
                         value={this.state.title}
+                        autoCapitalize={'words'}
                         onChangeText={title => this.setState({ title })}
                         selectionColor={'#80d6ff'}
                     />
                 </View>
                 <ScrollView style={styles.container}>
-                    <Text>TODO: Sharing, deletion, modification</Text>
+                    <Text>TODO: Sharing, modification</Text>
                     {this.renderButton()}
                 </ScrollView>
             </View>
@@ -83,7 +91,7 @@ export default class ListModifyScreen extends Component {
     }
 
     renderButton() {
-        if (this.props.keyid === undefined)
+        if (this.props.list === undefined)
             return;
 
         return (
@@ -137,3 +145,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
 });
+
+export default connect()(ListModifyScreen)
