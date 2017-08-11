@@ -1,3 +1,19 @@
+/*
+ * Copyright 2017 Jun Siang Cheah
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
 import React, { Component } from 'react';
 import {
     Animated,
@@ -27,7 +43,7 @@ class MainListScreen extends Component {
         contextualMenuBackgroundColor: '#00adf5',
         contextualMenuButtonsColor: '#ffffff',
         navBarButtonColor: 'black'
-    };
+    }
 
     constructor(props) {
         super(props);
@@ -40,6 +56,36 @@ class MainListScreen extends Component {
         this.renderRow = this.renderRow.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
         this.renderHeader = this.renderHeader.bind(this);
+        this.props.navigator.setButtons({
+            rightButtons: [
+                {
+                    title: 'Settings',
+                    id: 'Settings',
+                    icon: iconsMap['settings'],
+                    buttonColor: 'black'
+                },
+                {
+                    title: 'Contacts',
+                    id: 'Contacts',
+                    icon: iconsMap['account-multiple'],
+                    buttonColor: 'black'
+                },
+            ],
+        });
+        this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    }
+
+    onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
+        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+            if (event.id == 'Contacts') { // this is the same id field from the static navigatorButtons definition
+                this.props.navigator.push({
+                    screen: 'torlist.ContactsScreen', // unique ID registered with Navigation.registerScreen
+                    title: 'Contacts',
+                    animated: true, // does the push have transition animation or does it happen immediately (optional)
+                    animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+                });
+            }
+        }
     }
 
     rowHasChanged(r1, r2) {
@@ -127,15 +173,6 @@ class MainListScreen extends Component {
             screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
             animated: true, // does the push have transition animation or does it happen immediately (optional)
             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
-            navigatorButtons: {
-                rightButtons: [
-                    {
-                        title: 'Done', // for a textual button, provide the button title (label)
-                        id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        icon: iconsMap['check']
-                    },
-                ],
-            }
         });
     }
 
@@ -175,15 +212,6 @@ class MainListScreen extends Component {
             screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
             animated: true, // does the push have transition animation or does it happen immediately (optional)
             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
-            navigatorButtons: {
-                rightButtons: [
-                    {
-                        title: 'Done', // for a textual button, provide the button title (label)
-                        id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
-                        icon: iconsMap['check']
-                    },
-                ],
-            },
             passProps: { list: this.props.lists.find(x => x.id == id) }
         });
     }

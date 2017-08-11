@@ -5,7 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const replaceSuffixPattern = /--(active|big|small|very-big)/g;
 const icons = {
   "check": [30, "#fff"],
-  "settings": [30, "#fff"]
+  "settings": [30, "#fff"],
+  "account-multiple": [30, "#fff"]
 }
 
 const defaultIconProvider = MaterialCommunityIcons;
