@@ -20,17 +20,47 @@ import { iconsMap, iconsLoaded } from './src/lib/icons';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import todoApp from './src/reducers';
-import { getStoredState, autoRehydrate, createPersistor } from 'redux-persist';
+import { 
+  getStoredState, autoRehydrate, createPersistor, purgeStoredState,
+  createTransform
+} from 'redux-persist';
 import FilesystemStorage from 'redux-persist-filesystem-storage';
+import * as actions from './src/actions';
+import Automerge from 'automerge'
 
 
-const persistConfig = { storage: FilesystemStorage }
+let automergeTransform = createTransform(
+    (inState, key) => {
+      if (key == 'documents') {
+        return inState.map(x => Automerge.save(x));
+      }
+      return inState;
+    },
+    (outState, key) => {
+      if (key == 'documents') {
+        return outState.map(x => Automerge.load(x));
+      }
+      return outState;
+    }
+);
+
+let persistConfig = { storage: FilesystemStorage, transforms: [automergeTransform] }
 
 console.log('getting stored state');
 getStoredState(persistConfig, (err, restoredState) => {
   console.log('state restored', restoredState);
   const store = createStore(todoApp, restoredState);
   const persistor = createPersistor(store, persistConfig);
+  // persistor.purge();
+  let initialState = store.getState();
+  // Create initial inbox list
+  if ("documents" in initialState) {
+    if (initialState.documents.find(x => x.id == 'inbox') === undefined) {
+      store.dispatch(actions.addList('inbox', 'Inbox'));
+    }
+  } else {
+    store.dispatch(actions.addList('inbox', 'Inbox'));
+  }
   console.log('loading icons');
   iconsLoaded.then(() => {
     console.log('icons loaded, starting app');

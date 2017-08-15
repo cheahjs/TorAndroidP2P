@@ -51,8 +51,8 @@ class TodoListScreen extends Component {
                                     key={todo.id}
                                     todo={todo}
                                     listId={this.props.listId}
-                                    toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id)}
-                                    toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id)} />
+                                    toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id, todo.listId)}
+                                    toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id, todo.listId)} />
                             ))}
                     </View>
                     {/* Show Completed Button */}
@@ -97,8 +97,8 @@ class TodoListScreen extends Component {
                             key={todo.id}
                             todo={todo}
                             listId={this.props.listId}
-                            toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id)}
-                            toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id)} />
+                            toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id, todo.listId)}
+                            toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id, todo.listId)} />
                     ))}
             </View>);
     }
@@ -124,22 +124,27 @@ const styles = StyleSheet.create({
     }
 });
 
-function getTodos(listId, todos) {
-    return todos.filter(x => x.listId == listId
-        || (listId == 'starred' && x.starred));
+function getTodos(listId, documents) {
+    if (listId == 'starred') {
+        return documents.reduce((a, ele) => {
+            return a.concat(ele.todos.filter(x => x.starred));
+        }, []);
+    } else {
+        return documents.find(x => x.id == listId).todos;
+    }
 }
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        todos: getTodos(ownProps.id, state.todos)
+        todos: getTodos(ownProps.id, state.documents)
     };
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         addTodo: (id, listId, title, starred) => dispatch(actions.addTodo(id, listId, title, starred)),
-        toggleCompleteTodo: (id) => dispatch(actions.toggleCompleteTodo(id)),
-        toggleStarredTodo: (id) => dispatch(actions.toggleStarredTodo(id))
+        toggleCompleteTodo: (id, listId) => dispatch(actions.toggleCompleteTodo(id, listId)),
+        toggleStarredTodo: (id, listId) => dispatch(actions.toggleStarredTodo(id, listId))
     }
 }
 

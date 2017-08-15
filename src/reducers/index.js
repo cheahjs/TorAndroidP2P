@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux'
-import todos from './todos'
+import documents from './documents'
 import lists from './lists'
 import contacts from './contacts'
 import name from './name'
 
 const todoApp = combineReducers({
-    todos,
+    documents,
     lists,
     contacts,
     name

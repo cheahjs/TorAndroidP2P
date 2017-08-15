@@ -51,7 +51,7 @@ class MainListScreen extends Component {
         this._contextualMenu = false;
         const ds = new ListView.DataSource({ rowHasChanged: this.rowHasChanged.bind(this) });
         this.state = {
-            dataSource: ds.cloneWithRows(this.props.lists),
+            dataSource: ds.cloneWithRows(this.props.lists.filter(x => x != 'inbox')),
             initial: true
         };
         this.renderRow = this.renderRow.bind(this);
@@ -103,27 +103,11 @@ class MainListScreen extends Component {
 
     rowHasChanged(r1, r2) {
         return true;
-        if (r1 !== r2)
-            return true;
-        if (r1.title !== r2.title)
-            return true;
-        let r1Todos = this.props.todos.filter(x => x.listId == r1.id);
-        let r2Todos = this.props.todos.filter(x => x.listId == r2.id);
-        if (r1Todos.length != r2Todos.length)
-            return true;
-        for (var r1Todo of r1Todos) {
-            let r2Find = r2Todos.find(x => x.id == r1Todo.id);
-            if (r2Find === undefined)
-                return true;
-            if (r1Todo !== r2Find)
-                return true;
-        }
-        return false;
     }
 
     componentWillReceiveProps(newProps) {
         this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(newProps.lists),
+            dataSource: this.state.dataSource.cloneWithRows(newProps.lists.filter(x => x != 'inbox')),
             initial: false
         });
     }
@@ -141,14 +125,16 @@ class MainListScreen extends Component {
     }
 
     renderRow = (data, sectionId, rowId, highlightRow) => {
+        let listId = data;
+        let document = this.props.documents.find(x => x.id == listId);
         return (
             <TouchableNativeFeedback
-                onPress={() => this.onPressRow(data.id)}
-                onLongPress={() => this.onLongPress(data.id)}>
+                onPress={() => this.onPressRow(listId)}
+                onLongPress={() => this.onLongPress(listId)}>
                 <View>
                     <Row
-                        data={data}
-                        incompleteCount={this.props.todos.filter(x => x.listId == data.id && !x.completed_at).length}
+                        data={document}
+                        incompleteCount={document.todos.filter(x => !x.completed_at).length}
                         active={false}
                         initial={this.state.initial} />
                 </View>
@@ -171,11 +157,23 @@ class MainListScreen extends Component {
             <View>
                 <TouchableNativeFeedback
                     onPress={this.onPressInbox}>
-                    <View><InboxRow count={this.props.todos.filter(x => x.listId == "inbox" && !x.completed_at).length} /></View>
+                    <View>
+                        <InboxRow count={this.props.documents
+                            .find(x => x.id == "inbox").todos
+                            .filter(x => !x.completed_at).length} />
+                    </View>
                 </TouchableNativeFeedback>
                 <TouchableNativeFeedback
                     onPress={this.onPressStarred}>
-                    <View><StarredRow count={this.props.todos.filter(x => x.starred && !x.completed_at).length} /></View>
+                    <View>
+                        <StarredRow
+                            count={this.props.documents
+                                .reduce((val, document) => {
+                                    return document.todos
+                                        .filter(todo => todo.starred && !todo.completed_at).length
+                                        + val;
+                                }, 0)} />
+                    </View>
                 </TouchableNativeFeedback>
             </View>
         );
@@ -212,7 +210,7 @@ class MainListScreen extends Component {
     onPressRow = (id) => {
         this.props.navigator.push({
             screen: 'torlist.TodoListScreen', // unique ID registered with Navigation.registerScreen
-            title: this.props.lists.find(x => x.id == id).title, // navigation bar title of the pushed screen (optional)
+            title: this.props.documents.find(x => x.id == id).title, // navigation bar title of the pushed screen (optional)
             passProps: { id }, // Object that will be passed as props to the pushed screen (optional)
             animated: true, // does the push have transition animation or does it happen immediately (optional)
             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
@@ -225,7 +223,7 @@ class MainListScreen extends Component {
             screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
             animated: true, // does the push have transition animation or does it happen immediately (optional)
             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
-            passProps: { list: this.props.lists.find(x => x.id == id) }
+            passProps: { list: this.props.documents.find(x => x.id == id) }
         });
     }
 }
@@ -239,7 +237,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
     return {
         lists: state.lists,
-        todos: state.todos
+        documents: state.documents
     };
 }
 

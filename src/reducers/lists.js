@@ -19,23 +19,10 @@ const lists = (state=[], action) => {
         case 'ADD_LIST':
             return [
                 ...state,
-                {
-                    id: action.id,
-                    title: action.title,
-                    created_at: action.created_at
-                }
+                action.id
             ];
-        case 'MODIFY_LIST':
-            return state.map(list => {
-                if (list.id == action.id) {
-                    return Object.assign({}, list, {
-                        title: action.title
-                    });
-                }
-                return list;
-            });
         case 'DELETE_LIST':
-            return state.filter(list => list.id != action.id);
+            return state.filter(list => list != action.id);
         default:
             return state;
     }

@@ -107,12 +107,17 @@ class ListModifyScreen extends Component {
                         selectionColor={'#80d6ff'}
                     />
                 </View>
-                <ScrollView style={styles.container}>
-                    <Text>TODO: Sharing, modification</Text>
+                <ScrollView style={styles.bodyContainer}>
+                    <Text style={{padding: 0, fontWeight: '400'}}>List Members</Text>
+                    {this.renderContacts()}
                     {this.renderButton()}
                 </ScrollView>
             </View>
         );
+    }
+
+    renderContacts() {
+        return;
     }
 
     renderButton() {
@@ -138,6 +143,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
+    },
+    bodyContainer: {
+        flex: 1,
+        padding: 24
     },
     header: {
         backgroundColor: '#42a5f5',
@@ -171,4 +180,10 @@ const styles = StyleSheet.create({
     },
 });
 
-export default connect()(ListModifyScreen)
+const mapStateToProps = (state) => {
+    return {
+        contacts: state.contacts
+    }
+}
+
+export default connect(mapStateToProps)(ListModifyScreen)

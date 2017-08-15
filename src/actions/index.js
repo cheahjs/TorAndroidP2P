@@ -23,28 +23,33 @@ export const addTodo = (id, listId, title, starred) => ({
     created_at: Date.now()
 })
 
-export const toggleCompleteTodo = (id) => ({
+export const toggleCompleteTodo = (id, listId) => ({
     type: 'TOGGLE_COMPLETE_TODO',
     id,
+    listId,
     time: Date.now()
 })
 
-export const toggleStarredTodo = (id) => ({
+export const toggleStarredTodo = (id, listId) => ({
     type: 'TOGGLE_STARRED_TODO',
     id,
+    listId,
     time: Date.now()
 })
 
-export const modifyTodo = (id, title) => ({
+export const modifyTodo = (id, listId, title) => ({
     type: 'MODIFY_TODO',
     id,
     title,
+    listId,
     time: Date.now()
 })
 
-export const deleteTodo = (id) => ({
+export const deleteTodo = (id, listId) => ({
     type: 'DELETE_TODO',
-    id
+    id,
+    listId,
+    time: Date.now()
 })
 
 
