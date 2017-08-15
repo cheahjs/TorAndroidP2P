@@ -13,7 +13,9 @@ import com.facebook.react.bridge.Promise;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Map;
 
+import fi.iki.elonen.NanoHTTPD;
 import info.guardianproject.netcipher.client.StrongBuilder;
 import info.guardianproject.netcipher.client.StrongOkHttpClientBuilder;
 import okhttp3.MediaType;
@@ -34,17 +36,20 @@ public class TorService extends Service implements StrongBuilder.Callback<OkHttp
 
     @Override
     public void onConnectionException(Exception e) {
-        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onConnectionException: " + e);
     }
 
     @Override
     public void onTimeout() {
-        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onTimeout: ");
     }
 
     @Override
     public void onInvalid() {
-        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Failed to connect.", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onInvalid: ");
     }
 
     public class TorServiceBinder extends Binder {
@@ -57,6 +62,11 @@ public class TorService extends Service implements StrongBuilder.Callback<OkHttp
     public void onCreate() {
         super.onCreate();
         buildClient();
+        try {
+            new HSServer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void buildClient() {
@@ -104,12 +114,29 @@ public class TorService extends Service implements StrongBuilder.Callback<OkHttp
                             .build();
                     try {
                         Response response = httpClient.newCall(request).execute();
-                        Log.i(TAG, response.body().toString());
-                        promise.resolve(response.body().toString());
+                        String responseString = response.body().string();
+                        Log.i(TAG, responseString);
+                        promise.resolve(responseString);
                     } catch (IOException e) {
                         e.printStackTrace();
+                        promise.reject(e);
                 }
             }
         }).start();
+    }
+
+    public class HSServer extends NanoHTTPD {
+        public HSServer() throws IOException {
+            super(23153);
+            start(15*1000, true);
+        }
+
+        @Override
+        public Response serve(IHTTPSession session) {
+            final StringBuilder buf = new StringBuilder();
+            for (Map.Entry<String, String> kv : session.getHeaders().entrySet())
+                buf.append(kv.getKey()).append(" : ").append(kv.getValue()).append("\n");
+            return newFixedLengthResponse(buf.toString());
+        }
     }
 }

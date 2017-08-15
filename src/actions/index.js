@@ -66,3 +66,19 @@ export const modifyList = (id, title) => ({
     title,
     time: Date.now()
 })
+
+export const setName = (name) => ({
+    type: 'SET_NAME',
+    name
+})
+
+export const addContact = (name, onion) => ({
+    type: 'ADD_CONTACT',
+    name,
+    onion
+})
+
+export const deleteContact = (onion) => ({
+    type: 'DELETE_CONTACT',
+    onion
+})

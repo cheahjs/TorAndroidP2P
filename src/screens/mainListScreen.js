@@ -34,6 +34,7 @@ import Row from '../components/row'
 import FooterRow from '../components/footerRow'
 import InboxRow from '../components/inboxRow'
 import StarredRow from '../components/starredRow'
+import OrbotHelper from '../native/OrbotHelper'
 
 const window = Dimensions.get('window');
 
@@ -77,13 +78,25 @@ class MainListScreen extends Component {
 
     onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
         if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'Contacts') { // this is the same id field from the static navigatorButtons definition
-                this.props.navigator.push({
-                    screen: 'torlist.ContactsScreen', // unique ID registered with Navigation.registerScreen
-                    title: 'Contacts',
-                    animated: true, // does the push have transition animation or does it happen immediately (optional)
-                    animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
-                });
+            switch (event.id) {
+                case 'Contacts': {  // this is the same id field from the static navigatorButtons definition
+                    this.props.navigator.push({
+                        screen: 'torlist.ContactsScreen', // unique ID registered with Navigation.registerScreen
+                        title: 'Contacts',
+                        animated: true, // does the push have transition animation or does it happen immediately (optional)
+                        animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+                    });
+                    break;
+                }
+                case 'Settings': {
+                    this.props.navigator.push({
+                        screen: 'torlist.SettingsScreen', // unique ID registered with Navigation.registerScreen
+                        title: 'Settings',
+                        animated: true, // does the push have transition animation or does it happen immediately (optional)
+                        animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+                    });
+                    break;
+                }
             }
         }
     }

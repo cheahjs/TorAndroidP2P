@@ -17,9 +17,10 @@
 import React, { Component } from 'react';
 import {
     StyleSheet, ScrollView, Text, View, Image, TouchableHighlight,
-    Dimensions, RefreshControl, LayoutAnimation, Animated
+    Dimensions, RefreshControl, LayoutAnimation, Animated, ListView
 } from 'react-native';
 import { connect } from 'react-redux';
+import { iconsMap } from '../lib/icons'
 import * as actions from '../actions'
 
 const { width, height } = Dimensions.get('window');
@@ -28,11 +29,45 @@ const { width, height } = Dimensions.get('window');
 class ContactsScreen extends Component {
     constructor(props) {
         super(props);
+        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+        this.state = {
+            dataSource: ds.cloneWithRows(this.props.contacts)
+        };
+        this.renderRow = this.renderRow.bind(this);
+        this.props.navigator.setButtons({
+            rightButtons: [
+                {
+                    title: 'Add',
+                    id: 'add',
+                    icon: iconsMap['plus'],
+                    buttonColor: 'black'
+                },
+                {
+                    title: 'Share',
+                    id: 'share',
+                    icon: iconsMap['account-multiple'],
+                    buttonColor: 'black'
+                },
+            ],
+        });
     }
 
     render() {
         return (
             <View style={styles.container}>
+                <ListView
+                    dataSource={this.state.dataSource}
+                    renderRow={this.renderRow}
+                />
+            </View>
+        );
+    }
+
+    renderRow(data) {
+        return (
+            <View>
+                <Text>{data.name}</Text>
+                <Text>{data.onion}</Text>
             </View>
         );
     }
@@ -42,39 +77,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
         padding: 10
-    },
-    btn: {
-        alignSelf: 'center',
-        marginVertical: 20,
-        paddingVertical: 6,
-        paddingHorizontal: 10,
-        backgroundColor: 'rgba(88,141,100,0.8)',
-        borderRadius: 2,
-    },
-    btnText: {
-        color: 'white',
-        fontSize: 10,
-        fontWeight: '600',
     }
 });
 
-function getTodos(listId, todos) {
-    return todos.filter(x => x.listId == listId
-        || (listId == 'starred' && x.starred));
-}
-
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
-        todos: getTodos(ownProps.id, state.todos)
+        contacts: state.contacts
     };
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-    return {
-        addTodo: (id, listId, title, starred) => dispatch(actions.addTodo(id, listId, title, starred)),
-        toggleCompleteTodo: (id) => dispatch(actions.toggleCompleteTodo(id)),
-        toggleStarredTodo: (id) => dispatch(actions.toggleStarredTodo(id))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactsScreen)
+export default connect(mapStateToProps)(ContactsScreen)

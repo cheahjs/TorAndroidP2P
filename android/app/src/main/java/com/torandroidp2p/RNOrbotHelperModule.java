@@ -5,7 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -19,6 +22,7 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     private String orbotStatus = OrbotHelper.STATUS_OFF;
     private static final String STATUS_NOT_INSTALLED = "NOT_INSTALLED";
     private static final String STATUS_TIMEDOUT = "TIMED_OUT";
+
 
 
     public RNOrbotHelperModule(ReactApplicationContext reactContext) {
@@ -96,13 +100,26 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void requestHiddenServicePort(int port) {
-
+    public void requestHiddenServicePort() {
+        String onionHostName = getReactApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE).getString("onion_address", null);
+//        if (onionHostName != null)
+//            return;
+        Intent intent = new Intent(OrbotHelper.ACTION_REQUEST_HS);
+        intent.setPackage(OrbotHelper.ORBOT_PACKAGE_NAME);
+        intent.putExtra("hs_port", 23153);
+        intent.putExtra("hs_name", "TorList");
+        getCurrentActivity().startActivityForResult(intent, OrbotHelper.HS_REQUEST_CODE);
     }
 
     @ReactMethod
+    public void getOnionAddress(Callback cb) {
+        cb.invoke(Utils.getSharedPreferences(getReactApplicationContext()).getString("onion_address", ""));
+    }
+
+
+    @ReactMethod
     public void setServiceEnabled(boolean val) {
-        getReactApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE)
+        Utils.getSharedPreferences(getReactApplicationContext())
         .edit().putBoolean("service_enabled", val).apply();
     }
 
@@ -114,8 +131,7 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void sendMessage(String onionAddress, String message, Promise promise) {
         if (!mIsBound) {
-            promise.reject("E_SERVICE_NOT_BOUND", new Exception());
-            return;
+            doBindService();
         }
         try {
             mBoundService.sendMessage(onionAddress, message, promise);
@@ -129,6 +145,8 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     private boolean mIsBound;
 
     private ServiceConnection mConnection = new ServiceConnection() {
+        public static final String TAG = "ServiceConnection";
+
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
             // established, giving us the service object we can use to
@@ -136,6 +154,7 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
             // service that we know is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
             mBoundService = ((TorService.TorServiceBinder)service).getService();
+            Log.i(TAG, "onServiceConnected: " + mBoundService);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -144,6 +163,7 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
             // Because it is running in our same process, we should never
             // see this happen.
             mBoundService = null;
+            Log.i(TAG, "onServiceDisconnected: ");
         }
     };
 

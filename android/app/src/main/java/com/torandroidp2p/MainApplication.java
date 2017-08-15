@@ -3,6 +3,7 @@ package com.torandroidp2p;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.reactnativenavigation.NavigationApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -13,7 +14,10 @@ import com.reactnativenavigation.controllers.ActivityCallbacks;
 import java.util.Arrays;
 import java.util.List;
 
+import im.shimo.react.prompt.RNPromptPackage;
 import info.guardianproject.netcipher.proxy.OrbotHelper;
+
+import static android.app.Activity.RESULT_OK;
 
 public class MainApplication extends NavigationApplication {
     @Override
@@ -23,6 +27,14 @@ public class MainApplication extends NavigationApplication {
             @Override
             public void onActivityResult(int requestCode, int resultCode, Intent data) {
                 //TODO: Handle hidden service result here
+                if (resultCode != RESULT_OK)
+                    return;
+                String hsHost = data.getStringExtra("hs_host");
+                Toast.makeText(MainApplication.this, "Got hidden service: " + hsHost, Toast.LENGTH_SHORT).show();
+                Utils.getSharedPreferences(MainApplication.this)
+                        .edit()
+                        .putString("onion_address", hsHost)
+                        .commit();
             }
         });
         OrbotHelper.get(this)
@@ -44,7 +56,8 @@ public class MainApplication extends NavigationApplication {
         return Arrays.<ReactPackage>asList(
                 new VectorIconsPackage(),
                 new RNFetchBlobPackage(),
-                new RNOrbotHelperPackage()
+                new RNOrbotHelperPackage(),
+                new RNPromptPackage()
         );
     }
 
