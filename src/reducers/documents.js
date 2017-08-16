@@ -23,10 +23,10 @@ const documents = (state = [], action) => {
             amState = Automerge.changeset(amState, "Init list", doc => {
                 doc.id = action.id;
                 doc.title = action.title,
-                    doc.created_at = action.created_at,
-                    doc.last_modified = action.created_at,
-                    doc.todos = [],
-                    doc.peers = []
+                doc.created_at = action.created_at,
+                doc.last_modified = action.created_at,
+                doc.todos = [],
+                doc.peers = []
             });
             return [
                 ...state,
@@ -64,11 +64,11 @@ const documents = (state = [], action) => {
             return state.map(list => {
                 if (list.id == action.listId) {
                     return Automerge.changeset(list, "Toggle complete todo", doc => {
-                        for (todo of doc.todos) {
-                            if (todo.id == action.id) {
-                                todo.completed_at = !todo.completed_at ? action.time : null;
-                            }
+                        let index = doc.todos.findIndex(x => x.id == action.id);
+                        if (index != -1) {
+                            doc.todos[index].completed_at = !doc.todos[index].completed_at ? action.time : null;
                         }
+                        doc.last_modified = action.time;
                     });
                 }
                 return list;
@@ -77,10 +77,9 @@ const documents = (state = [], action) => {
             return state.map(list => {
                 if (list.id == action.listId) {
                     return Automerge.changeset(list, "Toggle starred todo", doc => {
-                        for (todo of doc.todos) {
-                            if (todo.id == action.id) {
-                                todo.starred = !todo.starred
-                            }
+                        let index = doc.todos.findIndex(x => x.id == action.id);
+                        if (index != -1) {
+                            doc.todos[index].starred = !doc.todos[index].starred;
                         }
                         doc.last_modified = action.time;
                     })
@@ -91,30 +90,29 @@ const documents = (state = [], action) => {
             return state.map(list => {
                 if (list.id == action.listId) {
                     return Automerge.changeset(list, "Modify todo", doc => {
-                        for (todo of doc.todos) {
-                            if (todo.id == action.id) {
-                                todo.title = action.title;
-                            }
+                        let index = doc.todos.findIndex(x => x.id == action.id);
+                        if (index != -1) {
+                            doc.todos[index].title = action.title;
                         }
                         doc.last_modified = action.time;
                     })
                 }
                 return list;
             });
-        case 'DELETE_TODO':
-            return state.map(list => {
-                if (list.id == action.listId) {
-                    return Automerge.changeset(list, "Modify todo", doc => {
-                        Object.keys(list.todos).forEach(key => {
-                            let todo = list.todos[key];
-                            if (todo.id == action.id)
-                                delete list.todos[key];
-                        })
-                        doc.last_modified = action.time;
-                    });
-                }
-                return list;
-            });
+        // case 'DELETE_TODO':
+        //     return state.map(list => {
+        //         if (list.id == action.listId) {
+        //             return Automerge.changeset(list, "Modify todo", doc => {
+        //                 Object.keys(list.todos).forEach(key => {
+        //                     let todo = list.todos[key];
+        //                     if (todo.id == action.id)
+        //                         delete list.todos[key];
+        //                 })
+        //                 doc.last_modified = action.time;
+        //             });
+        //         }
+        //         return list;
+        //     });
         default:
             return state;
     }
