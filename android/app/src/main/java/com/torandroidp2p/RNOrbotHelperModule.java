@@ -101,10 +101,10 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void requestHiddenServicePort() {
-        String onionHostName = getReactApplicationContext().getSharedPreferences("", Context.MODE_PRIVATE).getString("onion_address", null);
-//        if (onionHostName != null)
-//            return;
-        Intent intent = new Intent(OrbotHelper.ACTION_REQUEST_HS);
+        String onionHostName = Utils.getSharedPreferences(getReactApplicationContext()).getString("onion_address", "");
+        if (!onionHostName.trim().isEmpty())
+            return;
+        Intent intent   = new Intent(OrbotHelper.ACTION_REQUEST_HS);
         intent.setPackage(OrbotHelper.ORBOT_PACKAGE_NAME);
         intent.putExtra("hs_port", 23153);
         intent.putExtra("hs_name", "TorList");

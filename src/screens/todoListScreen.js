@@ -19,6 +19,7 @@ import {
     StyleSheet, ScrollView, Text, View, Image, TouchableHighlight,
     Dimensions, RefreshControl, LayoutAnimation, Animated
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import TodoForm from '../components/todoForm';
 import TodoItem from '../components/todo';
 import { connect } from 'react-redux';
@@ -37,8 +38,9 @@ class TodoListScreen extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <ScrollView>
+            <LinearGradient colors={['#1e5799', '#c9f6ff']} style={styles.container}>
+                {/* <Image source={require('../assets/img/bg.jpg')} style={{position: 'absolute'}} resizeMode={'stretch'} /> */}
+                    <ScrollView>
                     {/* Add a todo */}
                     <TodoForm id={this.props.id} addTodo={this.props.addTodo} />
                     {/* List */}
@@ -60,7 +62,7 @@ class TodoListScreen extends Component {
                     {/* Completed list */}
                     {this.renderCompleted()}
                 </ScrollView>
-            </View>
+            </LinearGradient>
         );
     }
 

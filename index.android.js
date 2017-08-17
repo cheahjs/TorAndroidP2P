@@ -50,6 +50,8 @@ console.log('getting stored state');
 getStoredState(persistConfig, (err, restoredState) => {
   console.log('state restored', restoredState);
   const store = createStore(todoApp, restoredState);
+  oldState = restoredState;
+  store.subscribe(stateChangeListener(store));
   const persistor = createPersistor(store, persistConfig);
   // persistor.purge();
   let initialState = store.getState();
@@ -68,6 +70,13 @@ getStoredState(persistConfig, (err, restoredState) => {
     startApp();
   });
 })
+
+let oldState;
+const stateChangeListener = (store) => () => {
+  let newState = store.getState();
+  //TODO: Fire off events here.
+  oldState = newState;
+}
 
 function startApp() {
   Navigation.startSingleScreenApp({

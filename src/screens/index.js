@@ -21,6 +21,7 @@ import TodoListScreen from './todoListScreen';
 import ListModifyScreen from './listModifyScreen';
 import ContactsScreen from './contactsScreen';
 import SettingsScreen from './settingsScreen';
+import ScannerScreen from './scannerScreen';
 
 // register all screens of the app (including internal ones)
 export function registerScreens(store, Provider) {
@@ -30,4 +31,5 @@ export function registerScreens(store, Provider) {
   Navigation.registerComponent('torlist.ListModifyScreen', () => ListModifyScreen, store, Provider);
   Navigation.registerComponent('torlist.ContactsScreen', () => ContactsScreen, store, Provider);
   Navigation.registerComponent('torlist.SettingsScreen', () => SettingsScreen, store, Provider);
+  Navigation.registerComponent('torlist.ScannerScreen', () => ScannerScreen, store, Provider);
 }

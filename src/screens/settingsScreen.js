@@ -33,7 +33,12 @@ class SettingsScreen extends Component {
         this.state = {
             hsHost: ''
         };
-        OrbotHelper.getOnionAddress(hsHost => this.setState({hsHost}));
+        OrbotHelper.getOnionAddress(hsHost => {
+            if (hsHost == '') {
+                hsHost = "No Hidden Service, click to setup";
+            }
+            this.setState({hsHost})
+        });
     }
 
     render() {
@@ -75,7 +80,7 @@ class SettingsScreen extends Component {
                 {text: 'OK', onPress: name => this.props.dispatch(actions.setName(name))}
             ],
             {
-                // defaultValue: !this.props.name ? '' : this.props.name
+                defaultValue: !this.props.name ? '' : this.props.name
             }
         )
     }

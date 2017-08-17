@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.horcrux.svg.SvgPackage;
 import com.reactnativenavigation.NavigationApplication;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.reactnativenavigation.controllers.ActivityCallbacks;
+import com.lwansbrough.RCTCamera.RCTCameraPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +60,10 @@ public class MainApplication extends NavigationApplication {
                 new VectorIconsPackage(),
                 new RNFetchBlobPackage(),
                 new RNOrbotHelperPackage(),
-                new RNPromptPackage()
+                new RNPromptPackage(),
+                new LinearGradientPackage(),
+                new SvgPackage(),
+                new RCTCameraPackage()
         );
     }
 
