@@ -103,12 +103,11 @@ const responseListener = (addr, response, conditionId) => {
                 console.log('something went wrong', addr, response, conditionId);
                 break;
         }
-    } catch(err) {
+        if (conditionId != null) {
+            OrbotHelper.setResponse(conditionId, returnResponse);
+        }
+    } catch (err) {
         ToastAndroid.show('Something went horribly wrong.', ToastAndroid.SHORT);
-    }
-
-    if (conditionId != null) {
-        OrbotHelper.setResponse(conditionId, returnResponse);
     }
 };
 
