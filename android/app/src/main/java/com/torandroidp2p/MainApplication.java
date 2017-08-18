@@ -1,18 +1,17 @@
 package com.torandroidp2p;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Toast;
 
-import com.horcrux.svg.SvgPackage;
-import com.reactnativenavigation.NavigationApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.facebook.react.ReactPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
-import com.reactnativenavigation.controllers.ActivityCallbacks;
+import com.aakashns.reactnativedialogs.ReactNativeDialogsPackage;
+import com.facebook.react.ReactPackage;
+import com.horcrux.svg.SvgPackage;
 import com.lwansbrough.RCTCamera.RCTCameraPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.reactnativenavigation.NavigationApplication;
+import com.reactnativenavigation.controllers.ActivityCallbacks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +62,8 @@ public class MainApplication extends NavigationApplication {
                 new RNPromptPackage(),
                 new LinearGradientPackage(),
                 new SvgPackage(),
-                new RCTCameraPackage()
+                new RCTCameraPackage(),
+                new ReactNativeDialogsPackage()
         );
     }
 

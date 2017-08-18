@@ -17,12 +17,16 @@
 import React, { Component } from 'react';
 import {
     View, StyleSheet, Dimensions, TextInput, ScrollView, Text, Alert,
-    TouchableHighlight
+    TouchableHighlight, TouchableNativeFeedback, ListView
 } from 'react-native';
 import { connect } from 'react-redux';
 import { iconsMap } from '../lib/icons'
 import * as actions from '../actions';
 import { uuidv4 } from '../utils';
+import FooterRow from '../components/footerRow'
+import Row from '../components/row'
+import DialogAndroid from 'react-native-dialogs';
+import OrbotHelper from '../native/OrbotHelper'
 
 const { height, width } = Dimensions.get('window');
 
@@ -38,8 +42,11 @@ class ListModifyScreen extends Component {
 
     constructor(props) {
         super(props);
+        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
-            title: ''
+            title: '',
+            dataSource: ds.cloneWithRows(this.props.list === undefined ? [] : this.props.list.peers),
+            hsHost: ''
         }
         if (this.props.list !== undefined) {
             this.state.title = this.props.list.title;
@@ -53,7 +60,13 @@ class ListModifyScreen extends Component {
                 },
             ],
         });
+        OrbotHelper.getOnionAddress(hsHost => {
+            this.setState({ hsHost })
+        });
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.renderFooter = this.renderFooter.bind(this);
+        this.renderRow = this.renderRow.bind(this);
+        this.onPressFooter = this.onPressFooter.bind(this);
     }
 
     onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
@@ -62,7 +75,7 @@ class ListModifyScreen extends Component {
                 if (!this.state.title)
                     return;
                 if (this.props.list) {
-                    this.props.dispatch(actions.modifyList(this.props.list.id, this.state.title));
+                    this.props.dispatch(actions.modifyList(this.props.id, this.state.title));
                 } else {
                     this.props.dispatch(actions.addList(uuidv4(), this.state.title))
                 }
@@ -80,7 +93,7 @@ class ListModifyScreen extends Component {
                 { text: "NO" },
                 {
                     text: "DELETE", onPress: () => {
-                        this.props.dispatch(actions.deleteList(this.props.list.id));
+                        this.props.dispatch(actions.deleteList(this.props.id));
                         this.props.navigator.pop({
                             animated: true, // does the pop have transition animation or does it happen immediately (optional)
                             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
@@ -89,6 +102,12 @@ class ListModifyScreen extends Component {
                 }
             ]);
 
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(newProps.list.peers)
+        });
     }
 
     render() {
@@ -108,7 +127,7 @@ class ListModifyScreen extends Component {
                     />
                 </View>
                 <ScrollView style={styles.bodyContainer}>
-                    <Text style={{padding: 0, fontWeight: '400'}}>List Members</Text>
+                    <Text style={{ padding: 0, fontWeight: '400' }}>Sharing with</Text>
                     {this.renderContacts()}
                     {this.renderButton()}
                 </ScrollView>
@@ -117,7 +136,56 @@ class ListModifyScreen extends Component {
     }
 
     renderContacts() {
-        return;
+        return (
+            <ListView
+                dataSource={this.state.dataSource}
+                renderRow={this.renderRow}
+                renderFooter={this.renderFooter}
+            />
+        );
+    }
+
+    renderRow = (data, sectionId, rowId, highlightRow) => {
+        return (
+            <TouchableNativeFeedback>
+                <View>
+                    <Row
+                        data={{ title: `${data.name} (${data.onion})` }}
+                        incompleteCount={0}
+                        active={false}
+                        initial={true} />
+                </View>
+            </TouchableNativeFeedback>
+
+        );
+    }
+
+    renderFooter = () => {
+        return (
+            <TouchableNativeFeedback
+                onPress={this.onPressFooter}>
+                <View><FooterRow text={'Add contact'} /></View>
+            </TouchableNativeFeedback>
+        );
+    }
+
+    onPressFooter = () => {
+        if (this.props.list === undefined)
+            return;
+        var dialog = new DialogAndroid();
+        dialog.set({
+            title: 'Choose a contact',
+            items: this.props.contacts
+                    .filter(x => this.props.list.peers.find(y => y.onion = x.onion) === undefined)
+                    .map(x => x.name + '\n' + x.onion),
+            itemsCallbackSingleChoice: (int, item) => {
+                let parts = item.split('\n');
+                console.log(int, item, parts);
+                if ()
+                this.props.dispatch(actions.addPeer(parts[0], parts[1], this.props.id));
+            }
+        });
+        dialog.show();
     }
 
     renderButton() {
@@ -180,9 +248,10 @@ const styles = StyleSheet.create({
     },
 });
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
     return {
-        contacts: state.contacts
+        contacts: state.contacts,
+        list: state.documents.find(x => x.id == ownProps.id)
     }
 }
 

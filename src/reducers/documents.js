@@ -43,6 +43,19 @@ const documents = (state = [], action) => {
             });
         case 'DELETE_LIST':
             return state.filter(list => list.id != action.id);
+        case 'ADD_PEER':
+            return state.map(list => {
+                if (list.id == action.listId) {
+                    return Automerge.changeset(list, "Add peer", doc => {
+                        doc.peers.push({
+                            name: action.name,
+                            onion: action.onion
+                        });
+                        doc.last_modified = action.time;
+                    })
+                }
+                return list;
+            });
         case 'ADD_TODO':
             return state.map(list => {
                 if (list.id == action.listId) {
@@ -99,20 +112,6 @@ const documents = (state = [], action) => {
                 }
                 return list;
             });
-        // case 'DELETE_TODO':
-        //     return state.map(list => {
-        //         if (list.id == action.listId) {
-        //             return Automerge.changeset(list, "Modify todo", doc => {
-        //                 Object.keys(list.todos).forEach(key => {
-        //                     let todo = list.todos[key];
-        //                     if (todo.id == action.id)
-        //                         delete list.todos[key];
-        //                 })
-        //                 doc.last_modified = action.time;
-        //             });
-        //         }
-        //         return list;
-        //     });
         default:
             return state;
     }

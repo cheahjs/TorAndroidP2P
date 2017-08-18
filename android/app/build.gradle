@@ -135,7 +135,12 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 dependencies {
+    compile project(':react-native-dialogs')
     compile project(':react-native-svg')
     compile project(':react-native-linear-gradient')
     compile project(':react-native-prompt-android')
@@ -151,6 +156,7 @@ dependencies {
     compile project(':react-native-camera')
     compile 'org.nanohttpd:nanohttpd:2.3.1'
     compile 'com.nanohttpd:nanohttpd-websocket:2.2.0'
+//    compile 'com.afollestad.material-dialogs:commons:0.8.6.2'
 }
 
 // Run this once to be able to run the application with BUCK

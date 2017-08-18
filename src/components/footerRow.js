@@ -32,7 +32,7 @@ export default class FooterRow extends Component {
                 styles.footerRow
             ]}>
                 <Icon name="plus" size={20} color="#64b5f6" />
-                <Text style={styles.footer}>Create list</Text>
+                <Text style={styles.footer}>{this.props.text}</Text>
             </View>
         );
     }

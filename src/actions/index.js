@@ -87,3 +87,11 @@ export const deleteContact = (onion) => ({
     type: 'DELETE_CONTACT',
     onion
 })
+
+export const addPeer = (name, onion, listId) => ({
+    type: 'ADD_PEER',
+    name,
+    onion,
+    listId,
+    time: Date.now()
+})

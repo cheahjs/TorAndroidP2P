@@ -24,6 +24,8 @@ import TodoForm from '../components/todoForm';
 import TodoItem from '../components/todo';
 import { connect } from 'react-redux';
 import * as actions from '../actions'
+import OrbotHelper from '../native/OrbotHelper'
+import Automerge from 'automerge'
 
 const { width, height } = Dimensions.get('window');
 
@@ -32,17 +34,26 @@ class TodoListScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            showCompleted: false
+            showCompleted: false,
+            refreshing: false,
+            hsHost: ''
         };
+        OrbotHelper.getOnionAddress(hsHost => {
+            this.setState({ hsHost })
+        });
     }
 
     render() {
         return (
             <LinearGradient colors={['#1e5799', '#c9f6ff']} style={styles.container}>
-                {/* <Image source={require('../assets/img/bg.jpg')} style={{position: 'absolute'}} resizeMode={'stretch'} /> */}
-                    <ScrollView>
+                <ScrollView refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this.onRefresh.bind(this)}
+                    />} >
                     {/* Add a todo */}
-                    <TodoForm id={this.props.id} addTodo={this.props.addTodo} />
+                    < TodoForm id={this.props.id} addTodo={this.props.addTodo} />
+
                     {/* List */}
                     <View style={{ flexDirection: 'column-reverse' }}>
                         {this.props.todos
@@ -57,12 +68,14 @@ class TodoListScreen extends Component {
                                     toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id, todo.listId)} />
                             ))}
                     </View>
+
                     {/* Show Completed Button */}
                     {this.renderButton()}
+
                     {/* Completed list */}
                     {this.renderCompleted()}
                 </ScrollView>
-            </LinearGradient>
+            </LinearGradient >
         );
     }
 
@@ -104,6 +117,33 @@ class TodoListScreen extends Component {
                     ))}
             </View>);
     }
+
+    onRefresh() {
+        if (this.props.listId == 'starred')
+            return;
+        let document = this.props.documents.find(x => this.props.listId == x.id);
+        if (document === undefined)
+            return;
+        if (document.peers.length == 0)
+            return;
+        this.setState({ refreshing: true });
+        this.props.navigator.showSnackbar({
+            text: "Sending list to contacts"
+        });
+        //TODO: THIS ONLY WORKS UNDER THE ASSUMPTION THAT WE DON'T MERGE WHILE BROADCASTING
+        document.peers.forEach(peer => {
+            if (peer.onion == this.state.hsHost)
+                return;
+            OrbotHelper.sendMessage(peer.onion, JSON.stringify({
+                name: this.props.name,
+                onion: this.state.onion,
+                type: 'FULL_DOCUMENT',
+                //TODO: send only deltas!
+                data: Automerge.save(document)
+            }));
+        });
+        this.setState({ refreshing: false });
+    }
 }
 const styles = StyleSheet.create({
     container: {
@@ -138,7 +178,9 @@ function getTodos(listId, documents) {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        todos: getTodos(ownProps.id, state.documents)
+        todos: getTodos(ownProps.id, state.documents),
+        documents: state.documents,
+        name: state.name
     };
 }
 

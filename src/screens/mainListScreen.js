@@ -147,7 +147,7 @@ class MainListScreen extends Component {
         return (
             <TouchableNativeFeedback
                 onPress={this.onPressFooter}>
-                <View><FooterRow /></View>
+                <View><FooterRow text={'Create list'}/></View>
             </TouchableNativeFeedback>
         );
     }
@@ -223,7 +223,7 @@ class MainListScreen extends Component {
             screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
             animated: true, // does the push have transition animation or does it happen immediately (optional)
             animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
-            passProps: { list: this.props.documents.find(x => x.id == id) }
+            passProps: { id }
         });
     }
 }
