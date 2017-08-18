@@ -56,6 +56,7 @@ OrbotHelper.bindService().then(() => {
         // Setup redux
         store = createStore(todoApp, restoredState);
         const persistor = createPersistor(store, persistConfig);
+        let initialState = store.getState();
         // Create initial inbox list if it doesn't already exist
         if ("documents" in initialState) {
             if (initialState.documents.find(x => x.id == 'inbox') === undefined) {
