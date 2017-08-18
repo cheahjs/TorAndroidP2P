@@ -86,7 +86,6 @@ const documents = (state = [], action) => {
             return state.map(list => {
                 if (list.id == action.listId) {
                     return Automerge.changeset(list, "Toggle complete todo", doc => {
-                        console.log('toggle complete', doc);
                         let index = doc.todos.findIndex(x => x.id == action.id);
                         if (index != -1) {
                             doc.todos[index].completed_at = !doc.todos[index].completed_at ? action.time : null;

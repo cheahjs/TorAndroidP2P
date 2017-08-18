@@ -76,24 +76,24 @@ class MainListScreen extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
-    onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
+    onNavigatorEvent(event) { 
+        if (event.type == 'NavBarButtonPress') {
             switch (event.id) {
-                case 'Contacts': {  // this is the same id field from the static navigatorButtons definition
+                case 'Contacts': {
                     this.props.navigator.push({
-                        screen: 'torlist.ContactsScreen', // unique ID registered with Navigation.registerScreen
+                        screen: 'torlist.ContactsScreen',
                         title: 'Contacts',
-                        animated: true, // does the push have transition animation or does it happen immediately (optional)
-                        animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+                        animated: true, 
+                        animationType: 'slide-horizontal',
                     });
                     break;
                 }
                 case 'Settings': {
                     this.props.navigator.push({
-                        screen: 'torlist.SettingsScreen', // unique ID registered with Navigation.registerScreen
+                        screen: 'torlist.SettingsScreen',
                         title: 'Settings',
-                        animated: true, // does the push have transition animation or does it happen immediately (optional)
-                        animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+                        animated: true,
+                        animationType: 'slide-horizontal',
                     });
                     break;
                 }
@@ -181,48 +181,48 @@ class MainListScreen extends Component {
 
     onPressFooter = () => {
         this.props.navigator.push({
-            screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
-            animated: true, // does the push have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            screen: 'torlist.ListModifyScreen', 
+            animated: true,
+            animationType: 'slide-horizontal', 
         });
     }
 
     onPressInbox = () => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', // unique ID registered with Navigation.registerScreen
-            title: "Inbox", // navigation bar title of the pushed screen (optional)
-            passProps: { id: 'inbox' }, // Object that will be passed as props to the pushed screen (optional)
-            animated: true, // does the push have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            screen: 'torlist.TodoListScreen', 
+            title: "Inbox",
+            passProps: { id: 'inbox' },
+            animated: true,
+            animationType: 'slide-horizontal', 
         });
     }
 
     onPressStarred = () => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', // unique ID registered with Navigation.registerScreen
-            title: "Starred", // navigation bar title of the pushed screen (optional)
-            passProps: { id: 'starred' }, // Object that will be passed as props to the pushed screen (optional)
-            animated: true, // does the push have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            screen: 'torlist.TodoListScreen', 
+            title: "Starred",
+            passProps: { id: 'starred' },
+            animated: true,
+            animationType: 'slide-horizontal', 
         });
     }
 
     onPressRow = (id) => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', // unique ID registered with Navigation.registerScreen
-            title: this.props.documents.find(x => x.id == id).title, // navigation bar title of the pushed screen (optional)
-            passProps: { id }, // Object that will be passed as props to the pushed screen (optional)
-            animated: true, // does the push have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            screen: 'torlist.TodoListScreen', 
+            title: this.props.documents.find(x => x.id == id).title,
+            passProps: { id },
+            animated: true,
+            animationType: 'slide-horizontal', 
         });
     }
 
     onLongPress = (id) => {
         Vibration.vibrate([0, 10]);
         this.props.navigator.push({
-            screen: 'torlist.ListModifyScreen', // unique ID registered with Navigation.registerScreen
-            animated: true, // does the push have transition animation or does it happen immediately (optional)
-            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the push have different transition animation (optional))
+            screen: 'torlist.ListModifyScreen', 
+            animated: true,
+            animationType: 'slide-horizontal', 
             passProps: { id }
         });
     }
