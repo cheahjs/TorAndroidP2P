@@ -48,9 +48,6 @@ export default class Todo extends Component {
                         activeOpacity={1}
                         onPress={this.props.toggleStarredTodo}
                     >
-                        {/* {starred && <View style={styles.starBg}>
-                            <View style={styles.bottomTriangle} />
-                        </View>} */}
                         <Icon
                             name={'star' + (starred ? '' : '-outline')}
                             size={24}

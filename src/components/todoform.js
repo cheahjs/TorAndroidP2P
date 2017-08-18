@@ -15,8 +15,8 @@
 */
 
 import React, { Component } from 'react';
-import { 
-    StyleSheet, TextInput, View, TouchableOpacity 
+import {
+  StyleSheet, TextInput, View, TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { uuidv4 } from '../utils';
@@ -24,7 +24,7 @@ import { uuidv4 } from '../utils';
 export default class TodoForm extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
       todo: '',
       starred: false,
@@ -47,7 +47,7 @@ export default class TodoForm extends Component {
     return (
       <View style={styles.container}>
         <View style={[styles.placeholder, { paddingTop: 2 }]}>
-           <Icon name="plus" size={24} color="white" /> 
+          <Icon name="plus" size={24} color="white" />
         </View>
 
         <View style={styles.wrap}>
@@ -68,11 +68,11 @@ export default class TodoForm extends Component {
           activeOpacity={1}
           onPress={this.onStarred.bind(this)}
         >
-           <Icon
+          <Icon
             name={'star' + (starred ? '' : '-outline')}
             size={24}
             color={'white'}
-          /> 
+          />
         </TouchableOpacity>
       </View>
     );

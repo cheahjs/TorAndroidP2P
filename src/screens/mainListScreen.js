@@ -16,16 +16,8 @@
 
 import React, { Component } from 'react';
 import {
-    Animated,
-    StyleSheet,
-    Text,
-    Image,
-    View,
-    Dimensions,
-    Vibration,
-    TouchableNativeFeedback,
-    TouchableHighlight,
-    ListView
+    Animated, StyleSheet, Text, View, Dimensions, Vibration,
+    TouchableNativeFeedback, ListView
 } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -76,14 +68,14 @@ class MainListScreen extends Component {
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
-    onNavigatorEvent(event) { 
+    onNavigatorEvent(event) {
         if (event.type == 'NavBarButtonPress') {
             switch (event.id) {
                 case 'Contacts': {
                     this.props.navigator.push({
                         screen: 'torlist.ContactsScreen',
                         title: 'Contacts',
-                        animated: true, 
+                        animated: true,
                         animationType: 'slide-horizontal',
                     });
                     break;
@@ -147,7 +139,7 @@ class MainListScreen extends Component {
         return (
             <TouchableNativeFeedback
                 onPress={this.onPressFooter}>
-                <View><FooterRow text={'Create list'}/></View>
+                <View><FooterRow text={'Create list'} /></View>
             </TouchableNativeFeedback>
         );
     }
@@ -181,48 +173,48 @@ class MainListScreen extends Component {
 
     onPressFooter = () => {
         this.props.navigator.push({
-            screen: 'torlist.ListModifyScreen', 
+            screen: 'torlist.ListModifyScreen',
             animated: true,
-            animationType: 'slide-horizontal', 
+            animationType: 'slide-horizontal',
         });
     }
 
     onPressInbox = () => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', 
+            screen: 'torlist.TodoListScreen',
             title: "Inbox",
             passProps: { id: 'inbox' },
             animated: true,
-            animationType: 'slide-horizontal', 
+            animationType: 'slide-horizontal',
         });
     }
 
     onPressStarred = () => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', 
+            screen: 'torlist.TodoListScreen',
             title: "Starred",
             passProps: { id: 'starred' },
             animated: true,
-            animationType: 'slide-horizontal', 
+            animationType: 'slide-horizontal',
         });
     }
 
     onPressRow = (id) => {
         this.props.navigator.push({
-            screen: 'torlist.TodoListScreen', 
+            screen: 'torlist.TodoListScreen',
             title: this.props.documents.find(x => x.id == id).title,
             passProps: { id },
             animated: true,
-            animationType: 'slide-horizontal', 
+            animationType: 'slide-horizontal',
         });
     }
 
     onLongPress = (id) => {
         Vibration.vibrate([0, 10]);
         this.props.navigator.push({
-            screen: 'torlist.ListModifyScreen', 
+            screen: 'torlist.ListModifyScreen',
             animated: true,
-            animationType: 'slide-horizontal', 
+            animationType: 'slide-horizontal',
             passProps: { id }
         });
     }

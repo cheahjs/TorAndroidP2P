@@ -54,8 +54,8 @@ class ListModifyScreen extends Component {
         this.props.navigator.setButtons({
             rightButtons: [
                 {
-                    title: 'Done', // for a textual button, provide the button title (label)
-                    id: 'done', // id for this button, given in onNavigatorEvent(event) to help understand which button was clicked
+                    title: 'Done',
+                    id: 'done',
                     icon: iconsMap['check']
                 },
             ],
@@ -69,9 +69,9 @@ class ListModifyScreen extends Component {
         this.onPressFooter = this.onPressFooter.bind(this);
     }
 
-    onNavigatorEvent(event) { // this is the onPress handler for the two buttons together
-        if (event.type == 'NavBarButtonPress') { // this is the event type for button presses
-            if (event.id == 'done') { // this is the same id field from the static navigatorButtons definition
+    onNavigatorEvent(event) {
+        if (event.type == 'NavBarButtonPress') {
+            if (event.id == 'done') {
                 if (!this.state.title)
                     return;
                 if (this.props.list) {
@@ -80,8 +80,8 @@ class ListModifyScreen extends Component {
                     this.props.dispatch(actions.addList(uuidv4(), this.state.title))
                 }
                 this.props.navigator.pop({
-                    animated: true, // does the pop have transition animation or does it happen immediately (optional)
-                    animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
+                    animated: true,
+                    animationType: 'slide-horizontal',
                 });
             }
         }
@@ -95,8 +95,8 @@ class ListModifyScreen extends Component {
                     text: "DELETE", onPress: () => {
                         this.props.dispatch(actions.deleteList(this.props.id));
                         this.props.navigator.pop({
-                            animated: true, // does the pop have transition animation or does it happen immediately (optional)
-                            animationType: 'slide-horizontal', // 'fade' (for both) / 'slide-horizontal' (for android) does the pop have different transition animation (optional)
+                            animated: true,
+                            animationType: 'slide-horizontal',
                         });
                     }
                 }
@@ -250,7 +250,6 @@ const styles = StyleSheet.create({
     btnText: {
         color: 'white',
         fontSize: 20,
-        // fontWeight: '600',
         textAlign: 'center',
     },
 });

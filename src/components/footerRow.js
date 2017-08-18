@@ -16,10 +16,7 @@
 
 import React, { Component } from 'react';
 import {
-    View,
-    StyleSheet,
-    Text,
-    Dimensions,
+    View, StyleSheet, Text, Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 

@@ -84,7 +84,6 @@ class ScannerScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: 'white',
     },
     zeroContainer: {
         height: 0,

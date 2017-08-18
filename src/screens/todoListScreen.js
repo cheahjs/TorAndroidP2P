@@ -16,8 +16,8 @@
 
 import React, { Component } from 'react';
 import {
-    StyleSheet, ScrollView, Text, View, Image, TouchableHighlight,
-    Dimensions, RefreshControl, LayoutAnimation, Animated
+    StyleSheet, ScrollView, Text, View, TouchableHighlight, Dimensions,
+    RefreshControl,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import TodoForm from '../components/todoForm';
@@ -26,7 +26,6 @@ import { connect } from 'react-redux';
 import * as actions from '../actions'
 import OrbotHelper from '../native/OrbotHelper'
 import Automerge from 'automerge'
-import axios from 'axios'
 
 const { width, height } = Dimensions.get('window');
 
@@ -131,7 +130,6 @@ class TodoListScreen extends Component {
         this.props.navigator.showSnackbar({
             text: "Sending list to contacts"
         });
-        //TODO: THIS ONLY WORKS UNDER THE ASSUMPTION THAT WE DON'T MERGE WHILE BROADCASTING
         document.peers.forEach(peer => {
             if (peer.onion == this.state.hsHost)
                 return;
@@ -143,17 +141,6 @@ class TodoListScreen extends Component {
                 data: Automerge.save(document)
             });
             OrbotHelper.sendMessage(peer.onion, message);
-            // axios.post('http://' + peer.onion + ":23153", message, {
-            //     proxy: {
-            //         host: '127.0.0.1',
-            //         port: 8118
-            //     }
-            // }).then(response => {
-            //     alert(JSON.stringify(response));
-            // }).catch(error => {
-            //     console.log(error);
-            //     console.log(JSON.stringify(error));
-            // });
         });
         this.setState({ refreshing: false });
     }
