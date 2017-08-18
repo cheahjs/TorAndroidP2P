@@ -18,11 +18,12 @@ import info.guardianproject.netcipher.proxy.OrbotHelper;
 import info.guardianproject.netcipher.proxy.StatusCallback;
 
 public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
+    private static final String TAG = "RNOrbotHelperModule";
     private OrbotHelper orbotHelper;
     private String orbotStatus = OrbotHelper.STATUS_OFF;
     private static final String STATUS_NOT_INSTALLED = "NOT_INSTALLED";
     private static final String STATUS_TIMEDOUT = "TIMED_OUT";
-
+    private Promise bindServicePromise;
 
 
     public RNOrbotHelperModule(ReactApplicationContext reactContext) {
@@ -70,6 +71,8 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
             }
         });
         orbotHelper.requestStatus(reactContext);
+        Log.d(TAG, "RNOrbotHelperModule: init helper");
+//        orbotHelper.init();
     }
 
     @Override
@@ -116,7 +119,6 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
         cb.invoke(Utils.getSharedPreferences(getReactApplicationContext()).getString("onion_address", ""));
     }
 
-
     @ReactMethod
     public void setServiceEnabled(boolean val) {
         Utils.getSharedPreferences(getReactApplicationContext())
@@ -124,7 +126,15 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void bindService() {
+    public void startService(Promise promise) {
+        Intent serviceIntent = new Intent(getReactApplicationContext(), TorService.class);
+        getReactApplicationContext().startService(serviceIntent);
+        promise.resolve(true);
+    }
+
+    @ReactMethod
+    public void bindService(Promise promise) {
+        bindServicePromise = promise;
         doBindService();
     }
 
@@ -141,6 +151,22 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
         }
     }
 
+    @ReactMethod
+    public void setResponseListener(Callback cb) {
+        if (!mIsBound) {
+            doBindService();
+        }
+        mBoundService.setResponseListener(cb);
+    }
+
+    @ReactMethod
+    public void setResponse(String key, String response) {
+        if (!mIsBound) {
+            doBindService();
+        }
+        mBoundService.setResponse(key, response);
+    }
+
     private TorService mBoundService;
     private boolean mIsBound;
 
@@ -155,6 +181,8 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
             // cast its IBinder to a concrete class and directly access it.
             mBoundService = ((TorService.TorServiceBinder)service).getService();
             Log.i(TAG, "onServiceConnected: " + mBoundService);
+            mIsBound = true;
+            bindServicePromise.resolve(true);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -168,6 +196,8 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
     };
 
     void doBindService() {
+        Intent serviceIntent = new Intent(getReactApplicationContext(), TorService.class);
+        getReactApplicationContext().startService(serviceIntent);
         if (!mIsBound) {
             Context context = getReactApplicationContext();
             // Establish a connection with the service.  We use an explicit
@@ -176,7 +206,6 @@ public class RNOrbotHelperModule extends ReactContextBaseJavaModule {
             // supporting component replacement by other applications).
             context.bindService(new Intent(context,
                     TorService.class), mConnection, Context.BIND_AUTO_CREATE);
-            mIsBound = true;
         }
     }
 

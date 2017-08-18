@@ -21,6 +21,11 @@ const lists = (state=[], action) => {
                 ...state,
                 action.id
             ];
+        case 'ADD_EXISTING_LIST':
+            return [
+                ...state,
+                action.list.id
+            ];
         case 'DELETE_LIST':
             return state.filter(list => list != action.id);
         default:

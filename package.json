@@ -9,6 +9,7 @@
   "dependencies": {
     "automerge": "git+https://github.com/Deathmax/automerge.git",
     "lodash": "^4.17.4",
+    "node-fetch": "^2.0.0-alpha.8",
     "proxy-polyfill": "git+https://github.com/Deathmax/proxy-polyfill.git",
     "react": "16.0.0-alpha.12",
     "react-native": "0.46.4",

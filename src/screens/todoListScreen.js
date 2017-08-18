@@ -26,9 +26,9 @@ import { connect } from 'react-redux';
 import * as actions from '../actions'
 import OrbotHelper from '../native/OrbotHelper'
 import Automerge from 'automerge'
+import axios from 'axios'
 
 const { width, height } = Dimensions.get('window');
-
 
 class TodoListScreen extends Component {
     constructor(props) {
@@ -63,7 +63,7 @@ class TodoListScreen extends Component {
                                 <TodoItem
                                     key={todo.id}
                                     todo={todo}
-                                    listId={this.props.listId}
+                                    listId={this.props.id}
                                     toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id, todo.listId)}
                                     toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id, todo.listId)} />
                             ))}
@@ -111,7 +111,7 @@ class TodoListScreen extends Component {
                         <TodoItem
                             key={todo.id}
                             todo={todo}
-                            listId={this.props.listId}
+                            listId={this.props.id}
                             toggleCompleteTodo={() => this.props.toggleCompleteTodo(todo.id, todo.listId)}
                             toggleStarredTodo={() => this.props.toggleStarredTodo(todo.id, todo.listId)} />
                     ))}
@@ -119,9 +119,10 @@ class TodoListScreen extends Component {
     }
 
     onRefresh() {
-        if (this.props.listId == 'starred')
+        if (this.props.id == 'starred')
             return;
-        let document = this.props.documents.find(x => this.props.listId == x.id);
+        let document = this.props.documents.find(x => this.props.id == x.id);
+        console.log(document, this.props);
         if (document === undefined)
             return;
         if (document.peers.length == 0)
@@ -134,13 +135,25 @@ class TodoListScreen extends Component {
         document.peers.forEach(peer => {
             if (peer.onion == this.state.hsHost)
                 return;
-            OrbotHelper.sendMessage(peer.onion, JSON.stringify({
+            let message = JSON.stringify({
                 name: this.props.name,
                 onion: this.state.onion,
                 type: 'FULL_DOCUMENT',
                 //TODO: send only deltas!
                 data: Automerge.save(document)
-            }));
+            });
+            OrbotHelper.sendMessage(peer.onion, message);
+            // axios.post('http://' + peer.onion + ":23153", message, {
+            //     proxy: {
+            //         host: '127.0.0.1',
+            //         port: 8118
+            //     }
+            // }).then(response => {
+            //     alert(JSON.stringify(response));
+            // }).catch(error => {
+            //     console.log(error);
+            //     console.log(JSON.stringify(error));
+            // });
         });
         this.setState({ refreshing: false });
     }

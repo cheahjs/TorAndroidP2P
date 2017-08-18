@@ -105,9 +105,10 @@ class ListModifyScreen extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(newProps.list.peers)
-        });
+        if (newProps.list)
+            this.setState({
+                dataSource: this.state.dataSource.cloneWithRows(newProps.list.peers)
+            });
     }
 
     render() {
@@ -176,12 +177,18 @@ class ListModifyScreen extends Component {
         dialog.set({
             title: 'Choose a contact',
             items: this.props.contacts
-                    .filter(x => this.props.list.peers.find(y => y.onion = x.onion) === undefined)
-                    .map(x => x.name + '\n' + x.onion),
+                .filter(x =>
+                    this.props.list.peers
+                        .find(y => y.onion == x.onion || y.onion == this.state.hsHost) === undefined)
+                .map(x => x.name + '\n' + x.onion),
             itemsCallbackSingleChoice: (int, item) => {
                 let parts = item.split('\n');
                 console.log(int, item, parts);
-                if ()
+                if (this.state.hsHost != '') {
+                    if (this.props.list.peers.find(x => x.onion == this.state.hsHost) === undefined) {
+                        this.props.dispatch(actions.addPeer(this.props.name, this.state.hsHost, this.props.id));
+                    }
+                }
                 this.props.dispatch(actions.addPeer(parts[0], parts[1], this.props.id));
             }
         });
@@ -251,7 +258,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state, ownProps) => {
     return {
         contacts: state.contacts,
-        list: state.documents.find(x => x.id == ownProps.id)
+        list: state.documents.find(x => x.id == ownProps.id),
+        name: state.name
     }
 }
 

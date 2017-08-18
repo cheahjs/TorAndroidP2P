@@ -32,6 +32,8 @@ const documents = (state = [], action) => {
                 ...state,
                 amState
             ];
+        case 'ADD_EXISTING_LIST':
+            return [...state, action.list];
         case 'MODIFY_LIST':
             return state.map(list => {
                 if (list.id == action.id) {
@@ -43,6 +45,13 @@ const documents = (state = [], action) => {
             });
         case 'DELETE_LIST':
             return state.filter(list => list.id != action.id);
+        case 'REPLACE_LIST':
+            return state.map(list => {
+                if (list.id == action.id) {
+                    return action.list;
+                }
+                return list;
+            });
         case 'ADD_PEER':
             return state.map(list => {
                 if (list.id == action.listId) {
@@ -77,6 +86,7 @@ const documents = (state = [], action) => {
             return state.map(list => {
                 if (list.id == action.listId) {
                     return Automerge.changeset(list, "Toggle complete todo", doc => {
+                        console.log('toggle complete', doc);
                         let index = doc.todos.findIndex(x => x.id == action.id);
                         if (index != -1) {
                             doc.todos[index].completed_at = !doc.todos[index].completed_at ? action.time : null;

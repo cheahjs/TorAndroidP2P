@@ -60,6 +60,11 @@ export const addList = (id, title) => ({
     created_at: Date.now()
 })
 
+export const addExistingList = (list) => ({
+    type: 'ADD_EXISTING_LIST',
+    list
+})
+
 export const deleteList = (id) => ({
     type: 'DELETE_LIST',
     id
@@ -70,6 +75,12 @@ export const modifyList = (id, title) => ({
     id, 
     title,
     time: Date.now()
+})
+
+export const replaceList = (id, list) => ({
+    type: 'REPLACE_LIST',
+    id,
+    list
 })
 
 export const setName = (name) => ({

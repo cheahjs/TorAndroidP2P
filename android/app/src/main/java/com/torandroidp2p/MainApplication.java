@@ -1,6 +1,7 @@
 package com.torandroidp2p;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -22,6 +23,8 @@ import info.guardianproject.netcipher.proxy.OrbotHelper;
 import static android.app.Activity.RESULT_OK;
 
 public class MainApplication extends NavigationApplication {
+    private static final String TAG = "MainApplication";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -39,6 +42,7 @@ public class MainApplication extends NavigationApplication {
                         .commit();
             }
         });
+        Log.d(TAG, "onCreate: init orbothelper");
         OrbotHelper.get(this)
                 .skipOrbotValidation()
                 .init();
